@@ -16,20 +16,22 @@ On first launch, all highlight files are parsed and loaded. With ~250 sources th
 
 ## What It Does
 
-**Browse** (`/`) — All books and articles in a grid with cover images. Filter by type using the tabs at the top.
+**Browse** (`/`) — All books and articles in a grid with cover images. Filter by type using the tabs at the top. Click a title to see its highlights; click an author name to see everything by that author.
 
-**Source view** (`/source/<title>`) — All highlights from a single book or article. Favorites (tagged `#favorite` in Readwise) are visually distinguished.
+**Source view** (`/source/...`) — All highlights from a single book or article. Favorites (tagged `#favorite` in Readwise) are visually distinguished. Each highlight has a `(View)` link back to Readwise or Kindle. The icon next to the title links to the book on Amazon or the original article URL.
 
-**Search** (`/search`) — Full-text search across every highlight. Results link back to the source.
+**Author view** (`/author/...`) — All works and highlights by a given author. Co-authored works show links to the other authors. Author names are clickable in every view.
+
+**Search** (`/search`) — Searches across highlight text, titles, and author names. Searching an author's name returns all their highlights.
 
 ## Your Highlight Files
 
-Highlights live in two folders and are sourced from Readwise exports:
+Highlights live in two folders, sourced from Readwise exports:
 
 - `Books/` — Kindle book highlights (~221 files)
 - `Articles/` — Web article highlights (~30 files)
 
-Each file is a markdown export from Readwise. Drop new exports into the appropriate folder and restart the app.
+Drop new exports into the appropriate folder and restart the app.
 
 ## Dependencies
 

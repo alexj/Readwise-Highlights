@@ -12,10 +12,10 @@
 
 ```bash
 cd Highlights
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-python app.py
+python3 app.py
 # Open http://localhost:5001
 ```
 
@@ -26,11 +26,12 @@ Highlights/
 ├── Articles/              # Article highlight files (Readwise export, ~30 files)
 ├── Books/                 # Book highlight files (Readwise export, ~221 files)
 ├── app.py                 # Flask app — routes and entry point
-├── highlights.py          # Parses markdown files into structured Python objects
+├── highlights.py          # Parses markdown files; data model; author utilities
 ├── templates/             # Jinja2 HTML templates
 │   ├── base.html          # Site shell: nav, Open Props, layout
 │   ├── index.html         # Home: browse all sources with filter tabs
-│   ├── source.html        # Single book/article view with all its highlights
+│   ├── source.html        # Single book/article with all highlights
+│   ├── author.html        # All works and highlights by one author
 │   └── search.html        # Full-text search results
 ├── static/
 │   ├── css/styles.css     # All styles, semantic classes, Open Props variables
@@ -62,71 +63,78 @@ https://cover-image-url.jpg
 Key parsing notes:
 - Type is determined by `#Highlights/books#` vs `#Highlights/articles#` tag
 - Articles have a `- URL: https://...` line before the cover image
-- Highlights end with `([View Highlight](...))` for articles, `([Location N](...))` for books
+- Highlights end with `([View Highlight](...))` for articles, `([Location N](...))` for books — the link is stripped from the text and stored separately; rendered as `(View)` inline
 - Some highlights have a `**Tags:** #favorite` line immediately after
 - Cover images are lines starting with `https://` after the tag line
 
 ## Key Features
 
 ### Implemented
-- Browse all sources (books + articles) with filter tabs
-- Individual source page showing all highlights
-- Full-text search across all highlight text
 
-### TODO: Author View
-A page listing all works and highlights by a given author. Requirements:
-- Route: `/author/<slug>` (slug = author name, URL-encoded or kebab-cased)
-- Shows all sources by that author, each with their highlights
-- Author names should be clickable links in all views (source header, index cards, search results) to reach this page
+**Browse** (`/`) — Grid of all sources with cover images, filter tabs (All / Books / Articles). Each card links to the source view; clicking an author name goes to the author view.
+
+**Source view** (`/source/<slug>`) — All highlights from one book or article. Favorites highlighted. Title has an external link icon: Amazon for books (ASIN extracted from Kindle links, falls back to keyword search), original URL for articles.
+
+**Author view** (`/author/<slug>`) — All works and highlights by a single author. Co-authored works show "with [co-author]" links. Author names are clickable in all views (index, source header, search results).
+
+**Search** (`/search`) — Full-text search across highlight text, source titles, and author names. Results link to source and author views.
 
 ### Planned: Related Highlights
-The "connect related highlights" feature should show semantically similar highlights from other sources alongside each highlight. Approach options (decide when building):
+Show semantically similar highlights from other sources alongside each highlight. Approach options (decide when building):
 
 1. **Simple / no-dependency**: TF-IDF keyword matching (`sklearn` only)
 2. **Semantic / local**: `sentence-transformers` with a small model like `all-MiniLM-L6-v2` — runs fully offline, no API key, best quality
 3. **Via Claude API**: Send highlight text to Claude for analysis — good for on-demand use
 
-The `highlights.py` module is the right place to add this logic once we decide on the approach.
-
 ## Development Guidelines
 
 ### Stack Rules
 - **No React, no TypeScript, no build tools** — vanilla JS only
-- Flask for all server-side logic (already acceptable for simple apps per Python standards)
+- Flask for all server-side logic
 - Open Props CDN for spacing/shadows/variables
 - Semantic BEM-style class names, no utility classes (per CSS standards)
-- Reload sources on startup; no database — flat files are the source of truth
+- Sources loaded once at startup; no database — flat files are the source of truth
+
+### Key Modules
+
+**`highlights.py`** — everything data-related:
+- `Highlight` and `Source` dataclasses
+- `Source.parsed_authors` — splits combined author strings into individual names; handles `and`, `,`, `, and`, parenthetical roles like `(Foreword)`, stray whitespace
+- `Source.external_url` — Amazon dp URL (via ASIN from Kindle links) for books, original URL for articles; falls back to keyword search. Mirrors `build_book_url()` logic from `feed-parser/readwise.py`
+- `parse_authors(string)` — the splitting function, importable
+- `author_slug(name)` — converts author name to URL-safe slug; registered as a Jinja2 filter in `app.py`
+- `load_all(base_dir)` — loads and sorts all sources from `Articles/` and `Books/`
+
+**`app.py`** — routes only; no business logic:
+- `/` — browse with type filter
+- `/source/<slug>` — single source view
+- `/author/<slug>` — author view; matches sources via `author_slug()` against each source's `parsed_authors`
+- `/search` — searches highlight text + source title + author name
 
 ### Templates
 - Extend `base.html` for all pages
-- Use Jinja2 template inheritance
-- Keep templates clean — move logic to `app.py` or `highlights.py`
-
-### Data Loading
-- Sources are loaded once at startup via `get_sources()` in `app.py`
-- Restart Flask to pick up new highlight files
-- The `Source` and `Highlight` dataclasses in `highlights.py` are the canonical data model
+- `author_slug` is available as a Jinja2 filter: `{{ name | author_slug }}`
+- Index cards use CSS stretched-link pattern: `.source-card__title-link::after` covers the card; `.source-card__author` sits above it with `position: relative; z-index: 1`
 
 ### Adding Features
 - New routes go in `app.py`
-- New parsing logic goes in `highlights.py`
+- New parsing/data logic goes in `highlights.py`
 - Don't add new dependencies without thinking it through first
 
 ## Known Issues & Gotchas
 
-- Some highlight files may have slightly inconsistent formatting — the parser is defensive but may miss edge cases; check the console for parse errors on startup
-- Cover image URLs are just raw `https://` lines in the file; not all sources have them
-- The Readwise link format differs between articles (readwise.io/read/) and books (readwise.io/to_kindle)
+- Some highlight files may have inconsistent formatting — the parser is defensive; check the console on startup for parse errors
+- Author strings with publisher names as co-authors (e.g. `Ramez Naam and ARGH! Oxford`) are treated as separate authors — Readwise metadata quirk, not worth special-casing
+- Cover image URLs are raw `https://` lines in the markdown; not all sources have them
+- 2 books have no ASIN in their Kindle links and fall back to Amazon keyword search
 
 ## Project-Specific Context
 
 ### Source Counts (as of setup)
-- Books: ~221 files
-- Articles: ~30 files
-- Total highlights: varies per source, some books have 20+ highlights
+- Books: ~221 files, Articles: ~30 files, ~2005 total highlights, ~232 individual authors
 
 ### Data Source
-All files exported from Readwise. New exports can be dropped into `Articles/` or `Books/` and will be picked up on next Flask restart.
+All files exported from Readwise. Drop new exports into `Articles/` or `Books/` and restart the app.
 
 ---
 
