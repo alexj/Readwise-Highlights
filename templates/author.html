@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}{{ author }} — Highlights{% endblock %}
+
+{% block content %}
+<div class="author-page">
+  <header class="author-header">
+    <h1 class="author-header__name">{{ author }}</h1>
+    <p class="author-header__stats">
+      {{ sources | length }} work{% if sources | length != 1 %}s{% endif %} &middot;
+      {{ total_highlights }} highlight{% if total_highlights != 1 %}s{% endif %}
+    </p>
+  </header>
+
+  {% for source in sources %}
+  <section class="author-source">
+    <header class="author-source__header">
+      {% if source.cover_image %}
+      <img src="{{ source.cover_image }}" alt="{{ source.title }} cover" class="author-source__cover">
+      {% endif %}
+      <div class="author-source__meta">
+        <span class="author-source__type">{{ source.source_type }}</span>
+        <h2 class="author-source__title">
+          <a href="/source/{{ source.slug }}" class="author-source__title-link">{{ source.title }}</a>{% if source.external_url %}<a href="{{ source.external_url }}" class="source-header__external-link" target="_blank" rel="noopener" aria-label="View on {% if source.source_type == 'book' %}Amazon{% else %}original site{% endif %}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/><path d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/></svg></a>{% endif %}
+        </h2>
+        {% if source.parsed_authors | length > 1 %}
+        <p class="author-source__coauthors">
+          with {% for name in source.parsed_authors %}{% if name != author %}<a href="/author/{{ name | author_slug }}" class="author-link">{{ name }}</a>{% if not loop.last and source.parsed_authors | length > 2 %}, {% endif %}{% endif %}{% endfor %}
+        </p>
+        {% endif %}
+        <p class="author-source__count">{{ source.highlights | length }} highlight{% if source.highlights | length != 1 %}s{% endif %}</p>
+      </div>
+    </header>
+
+    <ol class="highlight-list">
+      {% for highlight in source.highlights %}
+      <li class="highlight-item {% if 'favorite' in highlight.tags %}highlight-item--favorite{% endif %}">
+        <blockquote class="highlight-item__text">{{ highlight.text }}{% if highlight.link %} <a href="{{ highlight.link }}" class="highlight-item__view-link" target="_blank" rel="noopener">(View)</a>{% endif %}</blockquote>
+        {% if 'favorite' in highlight.tags %}
+        <p class="highlight-item__tags"><span class="highlight-item__tag">favorite</span></p>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ol>
+  </section>
+  {% endfor %}
+</div>
+{% endblock %}

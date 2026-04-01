@@ -33,7 +33,7 @@
           <a href="/source/{{ result.source.slug }}" class="search-result__source">
             {{ result.source.title }}
           </a>
-          <span class="search-result__author">{{ result.source.author }}</span>
+          <span class="search-result__author">{% for name in result.source.parsed_authors %}<a href="/author/{{ name | author_slug }}" class="author-link">{{ name }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</span>
         </footer>
       </li>
       {% endfor %}

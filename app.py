@@ -2,9 +2,10 @@ from pathlib import Path
 
 from flask import Flask, abort, render_template, request
 
-from highlights import Source, load_all
+from highlights import Source, author_slug, load_all, parse_authors
 
 app = Flask(__name__)
+app.jinja_env.filters["author_slug"] = author_slug
 BASE_DIR = Path(__file__).parent
 
 _sources: list[Source] | None = None
@@ -68,6 +69,32 @@ def search():
                     results.append({"source": source, "highlight": highlight})
 
     return render_template("search.html", results=results, query=query)
+
+
+@app.route("/author/<slug>")
+def author_view(slug: str):
+    all_sources = get_sources()
+
+    author_name = None
+    sources = []
+    for source in all_sources:
+        for name in source.parsed_authors:
+            if author_slug(name) == slug:
+                if author_name is None:
+                    author_name = name
+                sources.append(source)
+                break
+
+    if author_name is None:
+        abort(404)
+
+    total_highlights = sum(len(s.highlights) for s in sources)
+    return render_template(
+        "author.html",
+        author=author_name,
+        sources=sources,
+        total_highlights=total_highlights,
+    )
 
 
 if __name__ == "__main__":

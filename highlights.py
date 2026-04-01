@@ -31,6 +31,10 @@ class Source:
         return self.filepath.stem
 
     @property
+    def parsed_authors(self) -> list[str]:
+        return parse_authors(self.author)
+
+    @property
     def external_url(self) -> Optional[str]:
         """
         Best available external URL for this source. Mirrors the tiered logic
@@ -66,6 +70,45 @@ _LINK_PATTERN = re.compile(r'\s*\(\[(?:[^\]]+)\]\((https?://[^\)]+)\)\)\s*$')
 
 # Extracts Amazon ASIN from a Readwise to_kindle URL
 _ASIN_RE = re.compile(r'[?&]asin=([A-Z0-9]+)', re.IGNORECASE)
+
+# Strips parenthetical role descriptors like (Foreword), (Translator), (Editor)
+_ROLE_RE = re.compile(r'\s*\([^)]+\)')
+
+
+def parse_authors(author_string: str) -> list[str]:
+    """
+    Split a combined author string into individual author names.
+
+    Handles these formats (all found in the actual data):
+      - "Barack Obama"
+      - "Bob Woodward and Robert Costa"
+      - "Roger Fisher, William L. Ury, Bruce Patton"
+      - "Jake Knapp, John Zeratsky, and Braden Kowitz"
+      - "Adam Rutherford, Siddhartha Mukherjee (Foreword)"
+      - "Jocko Willink , Leif Babin"  (stray whitespace)
+    """
+    # Normalize ", and " → " and " so the subsequent split is clean
+    text = re.sub(r',\s+and\s+', ' and ', author_string, flags=re.IGNORECASE)
+    # Split on " and "
+    parts = re.split(r'\s+and\s+', text, flags=re.IGNORECASE)
+    # Split each part on "," and flatten
+    names = []
+    for part in parts:
+        names.extend(part.split(','))
+    # Strip whitespace and parenthetical roles; drop empty results
+    result = []
+    for name in names:
+        cleaned = _ROLE_RE.sub('', name).strip()
+        if cleaned:
+            result.append(cleaned)
+    return result
+
+
+def author_slug(name: str) -> str:
+    """Convert an author name to a URL-safe slug."""
+    slug = name.lower().strip()
+    slug = re.sub(r'[^a-z0-9]+', '-', slug)
+    return slug.strip('-')
 
 
 def parse_file(filepath: Path) -> Source:

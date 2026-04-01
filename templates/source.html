@@ -13,7 +13,9 @@
       <h1 class="source-header__title">
         {{ source.title }}{% if source.external_url %}<a href="{{ source.external_url }}" class="source-header__external-link" target="_blank" rel="noopener" aria-label="View on {% if source.source_type == 'book' %}Amazon{% else %}original site{% endif %}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/><path d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/></svg></a>{% endif %}
       </h1>
-      <p class="source-header__author">{{ source.author }}</p>
+      <p class="source-header__author">
+        {% for name in source.parsed_authors %}<a href="/author/{{ name | author_slug }}" class="author-link">{{ name }}</a>{% if not loop.last %}, {% endif %}{% endfor %}
+      </p>
       <p class="source-header__count">{{ source.highlights | length }} highlight{% if source.highlights | length != 1 %}s{% endif %}</p>
     </div>
   </header>
