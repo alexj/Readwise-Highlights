@@ -615,6 +615,307 @@ blockquote {
 }
 
 /* ==========================================================================
+   Related Highlights (inline in source view)
+   ========================================================================== */
+
+.highlight-related {
+  margin-top: var(--size-4);
+  padding-top: var(--size-3);
+  border-top: 1px solid var(--color-border);
+}
+
+.highlight-related__label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  margin: 0 0 var(--size-2);
+}
+
+.highlight-related__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2);
+}
+
+.highlight-related__item {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+.highlight-related__text {
+  color: var(--color-text-secondary);
+}
+
+.highlight-related__text:hover {
+  color: var(--color-text-primary);
+  text-decoration: underline;
+}
+
+.highlight-related__source {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.highlight-related__source-link {
+  color: var(--color-text-muted);
+}
+
+.highlight-related__source-link:hover {
+  color: var(--color-text-link);
+}
+
+.highlight-related__more {
+  display: inline-block;
+  margin-top: var(--size-2);
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.highlight-related__more:hover {
+  color: var(--color-text-link);
+  text-decoration: none;
+}
+
+/* ==========================================================================
+   Highlight Page (dedicated view with 15 related)
+   ========================================================================== */
+
+.highlight-page {
+  max-width: 740px;
+  margin: 0 auto;
+}
+
+.highlight-page__back {
+  margin-bottom: var(--size-5);
+}
+
+.highlight-page__back-link {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.highlight-page__back-link:hover {
+  color: var(--color-text-link);
+  text-decoration: none;
+}
+
+.highlight-page__quote {
+  padding: var(--size-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-bg-card);
+  margin-bottom: var(--size-7);
+}
+
+.highlight-page__text {
+  font-size: 1.15rem;
+  line-height: 1.75;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--size-4);
+}
+
+.highlight-page__meta {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--size-1);
+}
+
+.highlight-page__separator {
+  color: var(--color-text-muted);
+  margin: 0 var(--size-1);
+}
+
+.highlight-page__source-link {
+  color: var(--color-text-muted);
+}
+
+.highlight-page__source-link:hover {
+  color: var(--color-text-link);
+}
+
+.highlight-page__related-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 var(--size-4);
+  color: var(--color-text-secondary);
+}
+
+.highlight-page__no-related {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.highlight-item__source-line {
+  margin-top: var(--size-2);
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--size-1);
+}
+
+.highlight-item__source-sep {
+  margin: 0 var(--size-1);
+}
+
+.highlight-item__source-link {
+  color: var(--color-text-muted);
+}
+
+.highlight-item__source-link:hover {
+  color: var(--color-text-link);
+}
+
+/* ==========================================================================
+   Settings Page
+   ========================================================================== */
+
+.settings-page {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.settings-page__title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--size-7);
+}
+
+.settings-section {
+  margin-bottom: var(--size-8);
+}
+
+.settings-section__title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 var(--size-4);
+  padding-bottom: var(--size-3);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.75rem;
+}
+
+.settings-stats {
+  margin: 0 0 var(--size-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2);
+}
+
+.settings-stats__row {
+  display: flex;
+  gap: var(--size-4);
+}
+
+.settings-stats__label {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  min-width: 160px;
+}
+
+.settings-stats__value {
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.settings-status {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.1rem 0.5rem;
+  border-radius: 9999px;
+}
+
+.settings-status--ready {
+  background: oklch(0.92 0.08 150);
+  color: oklch(0.35 0.12 150);
+}
+
+.settings-status--building {
+  background: oklch(0.94 0.06 80);
+  color: oklch(0.45 0.1 80);
+}
+
+.settings-refresh-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-3);
+  align-items: flex-start;
+}
+
+.settings-refresh-form__note {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin: 0;
+  max-width: 42ch;
+  line-height: 1.5;
+}
+
+.settings-unavailable {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--size-3);
+}
+
+.settings-unavailable__install {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: 1.8;
+}
+
+.settings-code-block {
+  display: inline-block;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-input);
+  padding: 0.2rem 0.5rem;
+  font-family: ui-monospace, "Cascadia Code", "Source Code Pro", monospace;
+  font-size: 0.875rem;
+}
+
+/* ==========================================================================
+   Button
+   ========================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--size-2) var(--size-4);
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: none;
+  border-radius: var(--radius-input);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+
+.btn--primary {
+  background: var(--color-accent);
+  color: oklch(1 0 0);
+}
+
+.btn--primary:hover {
+  background: oklch(0.4 0.15 250);
+  text-decoration: none;
+}
+
+/* ==========================================================================
    Empty State
    ========================================================================== */
 

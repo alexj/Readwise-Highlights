@@ -27,16 +27,20 @@ Highlights/
 ├── Books/                 # Book highlight files (Readwise export, ~221 files)
 ├── app.py                 # Flask app — routes and entry point
 ├── highlights.py          # Parses markdown files; data model; author utilities
+├── similarity.py          # Semantic similarity index (optional, sentence-transformers)
 ├── templates/             # Jinja2 HTML templates
 │   ├── base.html          # Site shell: nav, Open Props, layout
 │   ├── index.html         # Home: browse all sources with filter tabs
-│   ├── source.html        # Single book/article with all highlights
+│   ├── source.html        # Single book/article with all highlights + inline related
 │   ├── author.html        # All works and highlights by one author
-│   └── search.html        # Full-text search results
+│   ├── search.html        # Full-text search results
+│   ├── highlight.html     # Single highlight with 15 related highlights
+│   └── settings.html      # Settings: index stats, refresh button
 ├── static/
 │   ├── css/styles.css     # All styles, semantic classes, Open Props variables
 │   └── js/main.js         # Minimal JS for interactivity
-├── requirements.txt
+├── requirements.txt       # Flask only
+├── requirements-ml.txt    # Flask + sentence-transformers (for related highlights)
 └── .gitignore
 ```
 
@@ -79,12 +83,14 @@ Key parsing notes:
 
 **Search** (`/search`) — Full-text search across highlight text, source titles, and author names. Results link to source and author views.
 
-### Planned: Related Highlights
-Show semantically similar highlights from other sources alongside each highlight. Approach options (decide when building):
+### Implemented: Related Highlights
+Semantically similar highlights shown inline (3) on source view and on a dedicated highlight page (15). Uses `sentence-transformers` with `all-MiniLM-L6-v2` model (offline, no API key).
 
-1. **Simple / no-dependency**: TF-IDF keyword matching (`sklearn` only)
-2. **Semantic / local**: `sentence-transformers` with a small model like `all-MiniLM-L6-v2` — runs fully offline, no API key, best quality
-3. **Via Claude API**: Send highlight text to Claude for analysis — good for on-demand use
+- `similarity.py` — `SimilarityIndex` class, `build_index()` with per-source incremental caching
+- Cache stored in `.embeddings_cache.pkl` (gitignored) — keyed by (slug, mtime, highlight count)
+- `IS_AVAILABLE` flag — graceful degradation if `sentence-transformers` not installed
+- Install: `pip install -r requirements-ml.txt`; restart app; index builds in background on first request
+- Refresh via Settings page (`/settings`) — reloads sources and rebuilds index incrementally
 
 ## Development Guidelines
 
@@ -107,9 +113,18 @@ Show semantically similar highlights from other sources alongside each highlight
 
 **`app.py`** — routes only; no business logic:
 - `/` — browse with type filter
-- `/source/<slug>` — single source view
+- `/source/<slug>` — single source view; passes `related_map` (dict of highlight index → top 3 related)
+- `/highlight/<slug>/<int:index>` — dedicated highlight view with 15 related highlights
 - `/author/<slug>` — author view; matches sources via `author_slug()` against each source's `parsed_authors`
 - `/search` — searches highlight text + source title + author name
+- `/settings` — index stats, library counts, refresh button
+- `/refresh` (POST) — reloads sources from disk and triggers background index rebuild
+
+**`similarity.py`** — semantic similarity (optional):
+- `IS_AVAILABLE` — True if `sentence-transformers` + `numpy` importable
+- `SimilarityIndex.find_related(slug, index, n)` — returns top-n `RelatedHighlight` objects
+- `build_index(sources)` — per-source incremental caching via `.embeddings_cache.pkl`
+- Index builds in background thread on first request; `_index_lock` prevents duplicate builds
 
 ### Templates
 - Extend `base.html` for all pages
@@ -138,5 +153,5 @@ All files exported from Readwise. Drop new exports into `Articles/` or `Books/` 
 
 ---
 
-**Last Updated**: 2026-04-01
+**Last Updated**: 2026-04-01 (related highlights feature added)
 **Maintained By**: Alex Jones

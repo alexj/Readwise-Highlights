@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Highlight — {{ source.title }} — Highlights{% endblock %}
+
+{% block content %}
+<div class="highlight-page">
+
+  <div class="highlight-page__back">
+    <a href="/source/{{ source.slug }}" class="highlight-page__back-link">← {{ source.title }}</a>
+  </div>
+
+  <article class="highlight-page__quote">
+    <blockquote class="highlight-page__text">{{ highlight.text }}</blockquote>
+    <footer class="highlight-page__meta">
+      {% for name in source.parsed_authors %}
+        <a href="/author/{{ name | author_slug }}" class="author-link">{{ name }}</a>{% if not loop.last %}, {% endif %}
+      {% endfor %}
+      <span class="highlight-page__separator">·</span>
+      <a href="/source/{{ source.slug }}" class="highlight-page__source-link">{{ source.title }}</a>
+      {% if highlight.link %}
+        <span class="highlight-page__separator">·</span>
+        <a href="{{ highlight.link }}" class="highlight-item__view-link" target="_blank" rel="noopener">(View)</a>
+      {% endif %}
+    </footer>
+  </article>
+
+  {% if related %}
+  <section class="highlight-page__related">
+    <h2 class="highlight-page__related-title">Related highlights</h2>
+    <ol class="highlight-list">
+      {% for rel in related %}
+      <li class="highlight-item {% if 'favorite' in rel.highlight.tags %}highlight-item--favorite{% endif %}">
+        <blockquote class="highlight-item__text">{{ rel.highlight.text }}{% if rel.highlight.link %} <a href="{{ rel.highlight.link }}" class="highlight-item__view-link" target="_blank" rel="noopener">(View)</a>{% endif %}</blockquote>
+        <p class="highlight-item__source-line">
+          {% for name in rel.source.parsed_authors %}
+            <a href="/author/{{ name | author_slug }}" class="author-link">{{ name }}</a>{% if not loop.last %}, {% endif %}
+          {% endfor %}
+          <span class="highlight-item__source-sep">·</span>
+          <a href="/source/{{ rel.source.slug }}" class="highlight-item__source-link">{{ rel.source.title }}</a>
+        </p>
+      </li>
+      {% endfor %}
+    </ol>
+  </section>
+  {% elif not related %}
+  <p class="highlight-page__no-related">
+    {% if not sim_available %}
+      Related highlights are not available — install <code>sentence-transformers</code> to enable them.
+    {% else %}
+      The similarity index is still building. Check back in a moment.
+    {% endif %}
+  </p>
+  {% endif %}
+
+</div>
+{% endblock %}

@@ -22,10 +22,26 @@
 
   <ol class="highlight-list">
     {% for highlight in source.highlights %}
+    {% set i = loop.index0 %}
     <li class="highlight-item {% if 'favorite' in highlight.tags %}highlight-item--favorite{% endif %}">
       <blockquote class="highlight-item__text">{{ highlight.text }}{% if highlight.link %} <a href="{{ highlight.link }}" class="highlight-item__view-link" target="_blank" rel="noopener">(View)</a>{% endif %}</blockquote>
       {% if 'favorite' in highlight.tags %}
       <p class="highlight-item__tags"><span class="highlight-item__tag">favorite</span></p>
+      {% endif %}
+
+      {% if related_map and related_map[i] %}
+      <div class="highlight-related">
+        <p class="highlight-related__label">Related</p>
+        <ul class="highlight-related__list">
+          {% for rel in related_map[i] %}
+          <li class="highlight-related__item">
+            <a href="/highlight/{{ rel.source.slug }}/{{ rel.highlight_index }}" class="highlight-related__text">{{ rel.highlight.text | truncate(160) }}</a>
+            <span class="highlight-related__source">— <a href="/source/{{ rel.source.slug }}" class="highlight-related__source-link">{{ rel.source.title }}</a></span>
+          </li>
+          {% endfor %}
+        </ul>
+        <a href="/highlight/{{ source.slug }}/{{ i }}" class="highlight-related__more">See all related →</a>
+      </div>
       {% endif %}
     </li>
     {% endfor %}

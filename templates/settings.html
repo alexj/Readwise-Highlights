@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Settings — Highlights{% endblock %}
+
+{% block content %}
+<div class="settings-page">
+  <h1 class="settings-page__title">Settings</h1>
+
+  <section class="settings-section">
+    <h2 class="settings-section__title">Library</h2>
+    <dl class="settings-stats">
+      <div class="settings-stats__row">
+        <dt class="settings-stats__label">Sources</dt>
+        <dd class="settings-stats__value">{{ source_count }}</dd>
+      </div>
+      <div class="settings-stats__row">
+        <dt class="settings-stats__label">Highlights</dt>
+        <dd class="settings-stats__value">{{ total_highlights }}</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="settings-section">
+    <h2 class="settings-section__title">Related Highlights</h2>
+
+    {% if sim_available %}
+      <dl class="settings-stats">
+        <div class="settings-stats__row">
+          <dt class="settings-stats__label">Status</dt>
+          <dd class="settings-stats__value">
+            {% if index_ready %}
+              <span class="settings-status settings-status--ready">Ready</span>
+            {% else %}
+              <span class="settings-status settings-status--building">Building…</span>
+            {% endif %}
+          </dd>
+        </div>
+        {% if index_ready %}
+        <div class="settings-stats__row">
+          <dt class="settings-stats__label">Highlights indexed</dt>
+          <dd class="settings-stats__value">{{ index_stats.total_highlights }}</dd>
+        </div>
+        <div class="settings-stats__row">
+          <dt class="settings-stats__label">Last built</dt>
+          <dd class="settings-stats__value">{{ index_stats.built_at | datetimeformat }}</dd>
+        </div>
+        {% endif %}
+      </dl>
+
+      <form method="post" action="/refresh" class="settings-refresh-form">
+        <button type="submit" class="btn btn--primary">Refresh index</button>
+        <p class="settings-refresh-form__note">Reloads all highlight files and rebuilds the similarity index. New highlights are picked up incrementally — only changed sources are reprocessed.</p>
+      </form>
+
+    {% else %}
+      <p class="settings-unavailable">
+        Related highlights require <code>sentence-transformers</code>, which is not installed.
+      </p>
+      <p class="settings-unavailable__install">
+        To enable, run:<br>
+        <code class="settings-code-block">pip install -r requirements-ml.txt</code><br>
+        then restart the app.
+      </p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}
