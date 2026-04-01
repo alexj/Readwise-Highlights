@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Browse — Highlights{% endblock %}
+
+{% block content %}
+<div class="browse-page">
+  <div class="browse-page__filters">
+    <a href="/?type=all" class="filter-tab {% if filter_type == 'all' %}filter-tab--active{% endif %}">
+      All <span class="filter-tab__count">{{ counts.all }}</span>
+    </a>
+    <a href="/?type=books" class="filter-tab {% if filter_type == 'books' %}filter-tab--active{% endif %}">
+      Books <span class="filter-tab__count">{{ counts.books }}</span>
+    </a>
+    <a href="/?type=articles" class="filter-tab {% if filter_type == 'articles' %}filter-tab--active{% endif %}">
+      Articles <span class="filter-tab__count">{{ counts.articles }}</span>
+    </a>
+  </div>
+
+  <ul class="source-grid">
+    {% for source in sources %}
+    <li class="source-card">
+      <a href="/source/{{ source.slug }}" class="source-card__link">
+        <div class="source-card__cover">
+          {% if source.cover_image %}
+            <img src="{{ source.cover_image }}" alt="{{ source.title }} cover" class="source-card__image" loading="lazy">
+          {% else %}
+            <div class="source-card__cover-placeholder">
+              {{ source.title[0] }}
+            </div>
+          {% endif %}
+        </div>
+        <div class="source-card__body">
+          <span class="source-card__type">{{ source.source_type }}</span>
+          <h2 class="source-card__title">{{ source.title }}</h2>
+          <p class="source-card__author">{{ source.author }}</p>
+          <p class="source-card__count">{{ source.highlights | length }} highlight{% if source.highlights | length != 1 %}s{% endif %}</p>
+        </div>
+      </a>
+    </li>
+    {% else %}
+    <li class="empty-state">No sources found.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

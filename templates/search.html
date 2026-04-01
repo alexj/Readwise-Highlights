@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Search — Highlights{% endblock %}
+
+{% block content %}
+<div class="search-page">
+  <form action="/search" method="get" class="search-form">
+    <input
+      type="search"
+      name="q"
+      value="{{ query }}"
+      placeholder="Search highlights..."
+      class="search-form__input"
+      autofocus
+    >
+    <button type="submit" class="search-form__btn">Search</button>
+  </form>
+
+  {% if query %}
+    <p class="search-results__summary">
+      {% if results %}
+        {{ results | length }} result{% if results | length != 1 %}s{% endif %} for <strong>{{ query }}</strong>
+      {% else %}
+        No results for <strong>{{ query }}</strong>
+      {% endif %}
+    </p>
+
+    <ol class="search-results">
+      {% for result in results %}
+      <li class="search-result">
+        <blockquote class="search-result__text">{{ result.highlight.text }}</blockquote>
+        <footer class="search-result__footer">
+          <a href="/source/{{ result.source.slug }}" class="search-result__source">
+            {{ result.source.title }}
+          </a>
+          <span class="search-result__author">{{ result.source.author }}</span>
+        </footer>
+      </li>
+      {% endfor %}
+    </ol>
+  {% endif %}
+</div>
+{% endblock %}

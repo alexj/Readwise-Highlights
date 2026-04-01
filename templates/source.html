@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}{{ source.title }} — Highlights{% endblock %}
+
+{% block content %}
+<div class="source-page">
+  <header class="source-header">
+    {% if source.cover_image %}
+    <img src="{{ source.cover_image }}" alt="{{ source.title }} cover" class="source-header__cover">
+    {% endif %}
+    <div class="source-header__meta">
+      <span class="source-header__type">{{ source.source_type }}</span>
+      <h1 class="source-header__title">{{ source.title }}</h1>
+      <p class="source-header__author">{{ source.author }}</p>
+      {% if source.url %}
+      <a href="{{ source.url }}" class="source-header__url" target="_blank" rel="noopener">View original</a>
+      {% endif %}
+      <p class="source-header__count">{{ source.highlights | length }} highlight{% if source.highlights | length != 1 %}s{% endif %}</p>
+    </div>
+  </header>
+
+  <ol class="highlight-list">
+    {% for highlight in source.highlights %}
+    <li class="highlight-item {% if 'favorite' in highlight.tags %}highlight-item--favorite{% endif %}">
+      <blockquote class="highlight-item__text">{{ highlight.text }}</blockquote>
+      <footer class="highlight-item__footer">
+        {% if 'favorite' in highlight.tags %}
+        <span class="highlight-item__tag">favorite</span>
+        {% endif %}
+        {% if highlight.link %}
+        <a href="{{ highlight.link }}" class="highlight-item__link" target="_blank" rel="noopener">
+          {% if source.source_type == 'book' %}View in Kindle{% else %}View highlight{% endif %}
+        </a>
+        {% endif %}
+      </footer>
+    </li>
+    {% endfor %}
+  </ol>
+</div>
+{% endblock %}

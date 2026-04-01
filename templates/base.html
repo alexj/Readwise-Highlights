@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Highlights{% endblock %}</title>
+  <link rel="stylesheet" href="https://unpkg.com/open-props">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <a href="/" class="site-nav__brand">Highlights</a>
+      <div class="site-nav__links">
+        <a href="/" class="site-nav__link">Browse</a>
+        <a href="/search" class="site-nav__link">Search</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="page-content">
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>
