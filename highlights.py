@@ -6,6 +6,7 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
+from urllib.parse import urlencode
 
 
 @dataclass
@@ -29,10 +30,42 @@ class Source:
     def slug(self) -> str:
         return self.filepath.stem
 
+    @property
+    def external_url(self) -> Optional[str]:
+        """
+        Best available external URL for this source. Mirrors the tiered logic
+        from feed-parser/readwise.py build_book_url(), minus the Google Books
+        HTTP call (not appropriate at parse time).
 
-# Matches the Readwise link at the end of a highlight line:
-# ([View Highlight](https://...)) or ([Location 303](https://...))
-_LINK_PATTERN = re.compile(r'\s*\(\[(?:View Highlight|Location \d+)\]\((https?://[^\)]+)\)\)\s*$')
+        Articles: source URL → DuckDuckGo search
+        Books:    ASIN from Kindle links → Amazon dp URL → Amazon keyword search
+        """
+        if self.source_type == "article":
+            if self.url:
+                return self.url
+            params = {"q": f"{self.author} {self.title}"}
+            return "https://duckduckgo.com/?" + urlencode(params)
+
+        # Books: extract ASIN from any Kindle highlight link
+        for h in self.highlights:
+            m = _ASIN_RE.search(h.link)
+            if m:
+                return f"https://www.amazon.com/dp/{m.group(1)}/"
+
+        # Fallback: Amazon keyword search
+        params = {"field-keywords": f"{self.author} {self.title}"}
+        return (
+            "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Ddigital-text&"
+            + urlencode(params)
+        )
+
+
+# Matches any Readwise/Kindle link at the end of a highlight line:
+# ([View Highlight](https://...)) or ([Location 303](https://...)) etc.
+_LINK_PATTERN = re.compile(r'\s*\(\[(?:[^\]]+)\]\((https?://[^\)]+)\)\)\s*$')
+
+# Extracts Amazon ASIN from a Readwise to_kindle URL
+_ASIN_RE = re.compile(r'[?&]asin=([A-Z0-9]+)', re.IGNORECASE)
 
 
 def parse_file(filepath: Path) -> Source:

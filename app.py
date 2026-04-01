@@ -59,8 +59,12 @@ def search():
     if query:
         query_lower = query.lower()
         for source in get_sources():
+            source_matches = (
+                query_lower in source.title.lower()
+                or query_lower in source.author.lower()
+            )
             for highlight in source.highlights:
-                if query_lower in highlight.text.lower():
+                if source_matches or query_lower in highlight.text.lower():
                     results.append({"source": source, "highlight": highlight})
 
     return render_template("search.html", results=results, query=query)

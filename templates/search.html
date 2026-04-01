@@ -28,7 +28,7 @@
     <ol class="search-results">
       {% for result in results %}
       <li class="search-result">
-        <blockquote class="search-result__text">{{ result.highlight.text }}</blockquote>
+        <blockquote class="search-result__text">{{ result.highlight.text }}{% if result.highlight.link %} <a href="{{ result.highlight.link }}" class="highlight-item__view-link" target="_blank" rel="noopener">(View)</a>{% endif %}</blockquote>
         <footer class="search-result__footer">
           <a href="/source/{{ result.source.slug }}" class="search-result__source">
             {{ result.source.title }}

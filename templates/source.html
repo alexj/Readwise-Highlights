@@ -10,11 +10,10 @@
     {% endif %}
     <div class="source-header__meta">
       <span class="source-header__type">{{ source.source_type }}</span>
-      <h1 class="source-header__title">{{ source.title }}</h1>
+      <h1 class="source-header__title">
+        {{ source.title }}{% if source.external_url %}<a href="{{ source.external_url }}" class="source-header__external-link" target="_blank" rel="noopener" aria-label="View on {% if source.source_type == 'book' %}Amazon{% else %}original site{% endif %}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/><path d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/></svg></a>{% endif %}
+      </h1>
       <p class="source-header__author">{{ source.author }}</p>
-      {% if source.url %}
-      <a href="{{ source.url }}" class="source-header__url" target="_blank" rel="noopener">View original</a>
-      {% endif %}
       <p class="source-header__count">{{ source.highlights | length }} highlight{% if source.highlights | length != 1 %}s{% endif %}</p>
     </div>
   </header>
@@ -22,17 +21,10 @@
   <ol class="highlight-list">
     {% for highlight in source.highlights %}
     <li class="highlight-item {% if 'favorite' in highlight.tags %}highlight-item--favorite{% endif %}">
-      <blockquote class="highlight-item__text">{{ highlight.text }}</blockquote>
-      <footer class="highlight-item__footer">
-        {% if 'favorite' in highlight.tags %}
-        <span class="highlight-item__tag">favorite</span>
-        {% endif %}
-        {% if highlight.link %}
-        <a href="{{ highlight.link }}" class="highlight-item__link" target="_blank" rel="noopener">
-          {% if source.source_type == 'book' %}View in Kindle{% else %}View highlight{% endif %}
-        </a>
-        {% endif %}
-      </footer>
+      <blockquote class="highlight-item__text">{{ highlight.text }}{% if highlight.link %} <a href="{{ highlight.link }}" class="highlight-item__view-link" target="_blank" rel="noopener">(View)</a>{% endif %}</blockquote>
+      {% if 'favorite' in highlight.tags %}
+      <p class="highlight-item__tags"><span class="highlight-item__tag">favorite</span></p>
+      {% endif %}
     </li>
     {% endfor %}
   </ol>

@@ -73,6 +73,12 @@ Key parsing notes:
 - Individual source page showing all highlights
 - Full-text search across all highlight text
 
+### TODO: Author View
+A page listing all works and highlights by a given author. Requirements:
+- Route: `/author/<slug>` (slug = author name, URL-encoded or kebab-cased)
+- Shows all sources by that author, each with their highlights
+- Author names should be clickable links in all views (source header, index cards, search results) to reach this page
+
 ### Planned: Related Highlights
 The "connect related highlights" feature should show semantically similar highlights from other sources alongside each highlight. Approach options (decide when building):
 

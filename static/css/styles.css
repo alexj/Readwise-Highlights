@@ -323,9 +323,24 @@ blockquote {
   margin: 0;
 }
 
-.source-header__url {
-  font-size: 0.85rem;
+.source-header__external-link {
+  display: inline-flex;
+  align-items: center;
+  margin-left: var(--size-2);
+  color: var(--color-text-muted);
+  vertical-align: middle;
+  position: relative;
+  top: -0.1em;
+}
+
+.source-header__external-link:hover {
   color: var(--color-text-link);
+  text-decoration: none;
+}
+
+.source-header__external-link svg {
+  width: 0.85em;
+  height: 0.85em;
 }
 
 .source-header__count {
@@ -365,10 +380,18 @@ blockquote {
   margin-bottom: var(--size-3);
 }
 
-.highlight-item__footer {
-  display: flex;
-  align-items: center;
-  gap: var(--size-3);
+.highlight-item__view-link {
+  font-size: 0.8em;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.highlight-item__view-link:hover {
+  color: var(--color-text-link);
+}
+
+.highlight-item__tags {
+  margin: var(--size-2) 0 0;
 }
 
 .highlight-item__tag {
@@ -377,15 +400,6 @@ blockquote {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--color-favorite);
-}
-
-.highlight-item__link {
-  font-size: 0.8rem;
-  color: var(--color-text-muted);
-}
-
-.highlight-item__link:hover {
-  color: var(--color-text-link);
 }
 
 /* ==========================================================================
