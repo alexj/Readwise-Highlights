@@ -9,7 +9,6 @@
     <img src="{{ source.cover_image }}" alt="{{ source.title }} cover" class="source-header__cover">
     {% endif %}
     <div class="source-header__meta">
-      <span class="source-header__type">{{ source.source_type }}</span>
       <h1 class="source-header__title">
         {{ source.title }}{% if source.external_url %}<a href="{{ source.external_url }}" class="source-header__external-link" target="_blank" rel="noopener" aria-label="View on {% if source.source_type == 'book' %}Amazon{% else %}original site{% endif %}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/><path d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/></svg></a>{% endif %}
       </h1>
@@ -30,8 +29,8 @@
       {% endif %}
 
       {% if related_map and related_map[i] %}
-      <div class="highlight-related">
-        <p class="highlight-related__label">Related</p>
+      <details class="highlight-related">
+        <summary class="highlight-related__label">Related</summary>
         <ul class="highlight-related__list">
           {% for rel in related_map[i] %}
           <li class="highlight-related__item">
@@ -41,7 +40,7 @@
           {% endfor %}
         </ul>
         <a href="/highlight/{{ source.slug }}/{{ i }}" class="highlight-related__more">See all related →</a>
-      </div>
+      </details>
       {% endif %}
     </li>
     {% endfor %}

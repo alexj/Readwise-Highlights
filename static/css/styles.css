@@ -284,13 +284,13 @@ blockquote {
 /* Author links — used across all views */
 
 .author-link {
-  color: var(--color-text-secondary);
+  color: var(--color-text-link);
   font-size: inherit;
 }
 
 .author-link:hover {
-  color: var(--color-text-link);
-  text-decoration: none;
+  color: var(--color-text-primary);
+  text-decoration: underline;
 }
 
 /* ==========================================================================
@@ -625,12 +625,37 @@ blockquote {
 }
 
 .highlight-related__label {
+  display: inline-flex;
+  align-items: center;
   font-size: 0.7rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--color-text-muted);
-  margin: 0 0 var(--size-2);
+  color: var(--color-text-link);
+  margin: 0;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.highlight-related__label::-webkit-details-marker {
+  display: none;
+}
+
+.highlight-related__label::after {
+  content: "▶";
+  display: inline-block;
+  margin-left: .65em;
+  font-size: 0.65em;
+  transition: transform 0.15s ease;
+}
+
+.highlight-related[open] .highlight-related__label::after {
+  transform: rotate(90deg);
+}
+
+.highlight-related[open] .highlight-related__label {
+  margin-bottom: var(--size-2);
 }
 
 .highlight-related__list {
@@ -663,23 +688,24 @@ blockquote {
 }
 
 .highlight-related__source-link {
-  color: var(--color-text-muted);
+  color: var(--color-text-link);
 }
 
 .highlight-related__source-link:hover {
-  color: var(--color-text-link);
+  color: var(--color-text-primary);
+  text-decoration: underline;
 }
 
 .highlight-related__more {
   display: inline-block;
   margin-top: var(--size-2);
   font-size: 0.8rem;
-  color: var(--color-text-muted);
+  color: var(--color-text-link);
 }
 
 .highlight-related__more:hover {
-  color: var(--color-text-link);
-  text-decoration: none;
+  color: var(--color-text-primary);
+  text-decoration: underline;
 }
 
 /* ==========================================================================
