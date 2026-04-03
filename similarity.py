@@ -146,7 +146,7 @@ def build_index(sources: list["Source"]) -> tuple[SimilarityIndex, dict]:
     for source in sources:
         slug = source.slug
         try:
-            mtime = source.filepath.stat().st_mtime
+            mtime = source.filepath.stat().st_mtime if source.filepath else 0.0
         except OSError:
             mtime = 0.0
         cache_key = (slug, mtime, len(source.highlights))

@@ -10,3 +10,5 @@ build/
 Books/
 Articles/
 .embeddings_cache.pkl
+highlights.db
+CLAUDE.md

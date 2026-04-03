@@ -12,23 +12,25 @@ from urllib.parse import urlencode
 @dataclass
 class Highlight:
     text: str
-    link: str
+    link: str                                    # "View" / Kindle location URL
     tags: list[str] = field(default_factory=list)
+    note: str = ""
+    is_favorite: bool = False
+    readwise_id: Optional[int] = None
 
 
 @dataclass
 class Source:
     title: str
     author: str
-    source_type: str  # 'book' or 'article'
-    cover_image: Optional[str]
-    url: Optional[str]
+    source_type: str                             # 'book' or 'article'
+    slug: str
     highlights: list[Highlight]
-    filepath: Path
+    cover_image: Optional[str] = None
+    url: Optional[str] = None                   # article source URL
+    asin: Optional[str] = None                  # Amazon ASIN (from API)
+    filepath: Optional[Path] = None             # set only when loaded from .md files
 
-    @property
-    def slug(self) -> str:
-        return self.filepath.stem
 
     @property
     def parsed_authors(self) -> list[str]:
@@ -42,7 +44,7 @@ class Source:
         HTTP call (not appropriate at parse time).
 
         Articles: source URL → DuckDuckGo search
-        Books:    ASIN from Kindle links → Amazon dp URL → Amazon keyword search
+        Books:    stored ASIN → ASIN from Kindle links → Amazon keyword search
         """
         if self.source_type == "article":
             if self.url:
@@ -50,7 +52,11 @@ class Source:
             params = {"q": f"{self.author} {self.title}"}
             return "https://duckduckgo.com/?" + urlencode(params)
 
-        # Books: extract ASIN from any Kindle highlight link
+        # Books: use stored ASIN first (populated from API)
+        if self.asin:
+            return f"https://www.amazon.com/dp/{self.asin}/"
+
+        # Fallback: extract ASIN from any Kindle highlight link
         for h in self.highlights:
             m = _ASIN_RE.search(h.link)
             if m:
@@ -111,7 +117,7 @@ def author_slug(name: str) -> str:
     return slug.strip('-')
 
 
-def parse_file(filepath: Path) -> Source:
+def parse_file(filepath: Path) -> "Source":
     content = filepath.read_text(encoding="utf-8")
     lines = content.splitlines()
 
@@ -178,7 +184,12 @@ def parse_file(filepath: Path) -> Source:
                 tags = re.findall(r"#(\w+)", lines[j + 1])
 
             if raw:
-                highlights.append(Highlight(text=raw, link=link, tags=tags))
+                highlights.append(Highlight(
+                    text=raw,
+                    link=link,
+                    tags=tags,
+                    is_favorite="favorite" in tags,
+                ))
 
         j += 1
 
@@ -186,14 +197,15 @@ def parse_file(filepath: Path) -> Source:
         title=title,
         author=author,
         source_type=source_type,
+        slug=filepath.stem,
+        highlights=highlights,
         cover_image=cover_image,
         url=url,
-        highlights=highlights,
         filepath=filepath,
     )
 
 
-def load_all(base_dir: Path) -> list[Source]:
+def load_all(base_dir: Path) -> list["Source"]:
     sources = []
     for subdir in ("Articles", "Books"):
         dir_path = base_dir / subdir
