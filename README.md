@@ -2,6 +2,10 @@
 
 A personal web app for browsing and searching your Readwise highlights — Kindle books and saved articles in one place, synced directly from the Readwise API.
 
+<img src="docs/screenshots/main.png" alt="Browse view" width="800">
+
+<img src="docs/screenshots/related.png" alt="Related highlights" width="800">
+
 ## Features
 
 **Browse** (`/`) — All books and articles in a grid with cover images. Filter by type. Click a title to see its highlights; click an author name to see everything by that author.
