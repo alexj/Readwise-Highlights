@@ -90,6 +90,7 @@ def _highlight_from_row(row: sqlite3.Row) -> Highlight:
         note=row["note"] or "",
         is_favorite=is_favorite,
         readwise_id=row["readwise_id"],
+        highlighted_at=row["highlighted_at"] or None,
     )
 
 
@@ -103,6 +104,7 @@ def _source_from_row(row: sqlite3.Row, highlights: list[Highlight]) -> Source:
         cover_image=row["cover_url"],
         url=row["source_url"],
         asin=row["asin"],
+        created_at=row["created_at"],
     )
 
 

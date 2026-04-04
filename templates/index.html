@@ -4,16 +4,23 @@
 
 {% block content %}
 <div class="browse-page">
-  <div class="browse-page__filters">
-    <a href="/?type=all" class="filter-tab {% if filter_type == 'all' %}filter-tab--active{% endif %}">
-      All <span class="filter-tab__count">{{ counts.all }}</span>
-    </a>
-    <a href="/?type=books" class="filter-tab {% if filter_type == 'books' %}filter-tab--active{% endif %}">
-      Books <span class="filter-tab__count">{{ counts.books }}</span>
-    </a>
-    <a href="/?type=articles" class="filter-tab {% if filter_type == 'articles' %}filter-tab--active{% endif %}">
-      Articles <span class="filter-tab__count">{{ counts.articles }}</span>
-    </a>
+  <div class="browse-page__controls">
+    <div class="browse-page__filters">
+      <a href="/?type=all&sort={{ sort_by }}" class="filter-tab {% if filter_type == 'all' %}filter-tab--active{% endif %}">
+        All <span class="filter-tab__count">{{ counts.all }}</span>
+      </a>
+      <a href="/?type=books&sort={{ sort_by }}" class="filter-tab {% if filter_type == 'books' %}filter-tab--active{% endif %}">
+        Books <span class="filter-tab__count">{{ counts.books }}</span>
+      </a>
+      <a href="/?type=articles&sort={{ sort_by }}" class="filter-tab {% if filter_type == 'articles' %}filter-tab--active{% endif %}">
+        Articles <span class="filter-tab__count">{{ counts.articles }}</span>
+      </a>
+    </div>
+    <select class="sort-select" aria-label="Sort order">
+      {% for key, label in sort_options %}
+      <option value="{{ key }}" {% if key == sort_by %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
   </div>
 
   <ul class="source-grid">

@@ -170,17 +170,42 @@ def isoformat_to_display(iso: str | None) -> str:
 # Routes — read
 # ---------------------------------------------------------------------------
 
+_SORT_OPTIONS: list[tuple[str, str]] = [
+    ("alpha-desc", "Alphabetical A→Z"),
+    ("alpha-asc",  "Alphabetical Z→A"),
+    ("newest",     "Date Added: Newest First"),
+    ("oldest",     "Date Added: Oldest First"),
+    ("highlights-high", "Most Highlights"),
+    ("highlights-low",  "Fewest Highlights"),
+]
+
+_SORT_KEYS = {
+    "alpha-desc":      (lambda s: s.title.lower(), False),
+    "alpha-asc":       (lambda s: s.title.lower(), True),
+    # ISO strings compare correctly as strings. NULLs sink to the bottom:
+    # newest (reverse=True)  → "" < any date, so NULLs land last ✓
+    # oldest (reverse=False) → "9999" > any real date, so NULLs land last ✓
+    "newest":          (lambda s: s.first_highlighted_at or "", True),
+    "oldest":          (lambda s: s.first_highlighted_at or "9999-12-31", False),
+    "highlights-high": (lambda s: len(s.highlights), True),
+    "highlights-low":  (lambda s: len(s.highlights), False),
+}
+
+
 @app.route("/")
 def index():
     all_sources = get_sources()
     filter_type = request.args.get("type", "all")
+    sort_by = request.args.get("sort", "alpha-desc")
+    if sort_by not in _SORT_KEYS:
+        sort_by = "alpha-desc"
 
     if filter_type == "books":
         sources = [s for s in all_sources if s.source_type == "book"]
     elif filter_type == "articles":
         sources = [s for s in all_sources if s.source_type == "article"]
     else:
-        sources = all_sources
+        sources = list(all_sources)
         filter_type = "all"
 
     counts = {
@@ -189,7 +214,17 @@ def index():
         "articles": sum(1 for s in all_sources if s.source_type == "article"),
     }
 
-    return render_template("index.html", sources=sources, filter_type=filter_type, counts=counts)
+    sort_key_fn, reverse = _SORT_KEYS[sort_by]
+    sources = sorted(sources, key=sort_key_fn, reverse=reverse)
+
+    return render_template(
+        "index.html",
+        sources=sources,
+        filter_type=filter_type,
+        counts=counts,
+        sort_by=sort_by,
+        sort_options=_SORT_OPTIONS,
+    )
 
 
 @app.route("/source/<path:slug>")

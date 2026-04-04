@@ -130,12 +130,43 @@ blockquote {
    Browse Page
    ========================================================================== */
 
+.browse-page__controls {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--size-4);
+  margin-bottom: var(--size-6);
+  border-bottom: 1px solid var(--color-border);
+}
+
 .browse-page__filters {
   display: flex;
   gap: var(--size-2);
-  margin-bottom: var(--size-6);
-  border-bottom: 1px solid var(--color-border);
   padding-bottom: 0;
+}
+
+.sort-select {
+  flex-shrink: 0;
+  padding: var(--size-1) var(--size-3);
+  margin-bottom: var(--size-2);
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-input);
+  cursor: pointer;
+  outline: none;
+  appearance: auto;
+}
+
+.sort-select:hover {
+  border-color: var(--color-border-hover);
+  color: var(--color-text-primary);
+}
+
+.sort-select:focus-visible {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px var(--color-accent-bg);
 }
 
 .filter-tab {

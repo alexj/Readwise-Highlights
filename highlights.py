@@ -17,6 +17,7 @@ class Highlight:
     note: str = ""
     is_favorite: bool = False
     readwise_id: Optional[int] = None
+    highlighted_at: Optional[str] = None        # ISO timestamp from Readwise
 
 
 @dataclass
@@ -30,11 +31,18 @@ class Source:
     url: Optional[str] = None                   # article source URL
     asin: Optional[str] = None                  # Amazon ASIN (from API)
     filepath: Optional[Path] = None             # set only when loaded from .md files
+    created_at: Optional[str] = None            # ISO timestamp from DB
 
 
     @property
     def parsed_authors(self) -> list[str]:
         return parse_authors(self.author)
+
+    @property
+    def first_highlighted_at(self) -> Optional[str]:
+        """Earliest highlighted_at across all highlights; None if unknown."""
+        dates = [h.highlighted_at for h in self.highlights if h.highlighted_at]
+        return min(dates) if dates else None
 
     @property
     def external_url(self) -> Optional[str]:
