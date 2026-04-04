@@ -2,7 +2,7 @@
 
 A personal web app for browsing and searching your Readwise highlights — Kindle books and saved articles in one place, synced directly from the Readwise API.
 
-<img src="docs/screenshots/main.png" alt="Browse view" width="800">
+<img src="docs/screenshots/main.png" alt="Browse view" width="800" style="border: 1px solid #333;">
 
 
 ## Features
@@ -17,7 +17,7 @@ A personal web app for browsing and searching your Readwise highlights — Kindl
 
 **Related highlights** — Semantically similar highlights shown inline on source pages and on a dedicated highlight page. Requires optional ML dependencies (see below).
 
-<img src="docs/screenshots/related.png" alt="Related highlights" width="800">
+<img src="docs/screenshots/related.png" alt="Related highlights" width="800" style="border: 1px solid #333;">
 ---
 
 ## Setup
