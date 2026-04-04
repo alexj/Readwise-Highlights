@@ -4,7 +4,6 @@ A personal web app for browsing and searching your Readwise highlights — Kindl
 
 <img src="docs/screenshots/main.png" alt="Browse view" width="800">
 
-<img src="docs/screenshots/related.png" alt="Related highlights" width="800">
 
 ## Features
 
@@ -18,6 +17,7 @@ A personal web app for browsing and searching your Readwise highlights — Kindl
 
 **Related highlights** — Semantically similar highlights shown inline on source pages and on a dedicated highlight page. Requires optional ML dependencies (see below).
 
+<img src="docs/screenshots/related.png" alt="Related highlights" width="800">
 ---
 
 ## Setup
